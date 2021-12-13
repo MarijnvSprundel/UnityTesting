@@ -15,7 +15,8 @@ public class Bomb : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ExplosionChecker(transform.position, 1);
+        ExplosionChecker(transform.position, 5);
+        
     }
 
     void ExplosionChecker(Vector3 center, float radius)
@@ -25,7 +26,7 @@ public class Bomb : MonoBehaviour
         {
             if (hitCollider.GetComponent<Rigidbody>())
             {
-                hitCollider.GetComponent<Rigidbody>().velocity = new Vector3(0, 10, 0);
+                hitCollider.GetComponent<Rigidbody>().velocity = (hitCollider.GetComponent<Rigidbody>().position - transform.position) * 10;
             }
 
         }
