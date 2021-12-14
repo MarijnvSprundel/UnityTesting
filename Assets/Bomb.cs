@@ -6,6 +6,7 @@ using UnityEngine;
 public class Bomb : MonoBehaviour
 {
     public float force;
+    public bool affectsPlayers;
     
     public void ExplosionChecker(float radius)
     {
@@ -16,16 +17,15 @@ public class Bomb : MonoBehaviour
             if (hitCollider.GetComponent<Rigidbody>())
             {
                 Vector3 hitPos = hitCollider.GetComponent<Rigidbody>().position;
-                float distance = Distance(position, hitPos);
+                float distance = Distance(hitPos, position);
                 hitCollider.GetComponent<Rigidbody>().velocity = ((radius - distance) * (hitCollider.GetComponent<Rigidbody>().position - position)) * (force * 0.1F);
             }
-            else if (hitCollider.GetComponent(typeof(PlayerController)))
+            else if (hitCollider.GetComponent(typeof(PlayerController)) && affectsPlayers)
             {
                 PlayerController playerController = (PlayerController) hitCollider.GetComponent(typeof(PlayerController));
                 Vector3 hitPos = playerController.transform.position;
-                float distance = Distance(position, hitPos);
-                
-                playerController.AddImpact(((radius - distance) * (hitCollider.GetComponent(typeof(PlayerController)).transform.position - position)) * (force* 0.1F));
+                float distance = Distance(hitPos, position);
+                playerController.AddImpact(((radius - distance) * (hitCollider.GetComponent(typeof(PlayerController)).transform.position - position)) * (force * 0.1F));
             }
 
         }

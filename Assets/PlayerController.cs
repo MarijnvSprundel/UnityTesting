@@ -37,7 +37,8 @@ public class PlayerController : MonoBehaviour
         
         if (impactForce.magnitude > 0.2) moveDirection += impactForce;
         controller.Move(moveDirection * Time.deltaTime);
-        impactForce = Vector3.Lerp(impactForce, Vector3.zero, 5000*Time.deltaTime);
+        // impactForce = Vector3.Lerp(impactForce, Vector3.zero, 5000*Time.deltaTime);
+        impactForce /= 200F;
     }
     
     public void AddImpact(Vector3 force)
