@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,8 @@ public class MouseHandler : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -28,5 +31,19 @@ public class MouseHandler : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -90, 90);
 
         cam.transform.eulerAngles = new Vector3(xRotation, yRotation, 0.0f);
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit))
+            {
+                if(hit.transform.gameObject.GetComponent(typeof(Bomb)))
+                {
+                    Bomb bomb = (Bomb) hit.transform.gameObject.GetComponent(typeof(Bomb));
+                    bomb.ExplosionChecker(10);
+                }
+            }
+        }
     }
 }

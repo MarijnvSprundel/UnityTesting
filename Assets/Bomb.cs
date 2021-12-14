@@ -1,34 +1,47 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
-
-
-    // Start is called before the first frame update
-    void Start()
+    public float force;
+    
+    public void ExplosionChecker(float radius)
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        ExplosionChecker(transform.position, 5);
-        
-    }
-
-    void ExplosionChecker(Vector3 center, float radius)
-    {
-        Collider[] hitColliders = Physics.OverlapSphere(center, radius);
+        Vector3 position = transform.position;
+        Collider[] hitColliders = Physics.OverlapSphere(position, radius);
         foreach(var hitCollider in hitColliders)
         {
             if (hitCollider.GetComponent<Rigidbody>())
             {
-                hitCollider.GetComponent<Rigidbody>().velocity = (hitCollider.GetComponent<Rigidbody>().position - transform.position) * 10;
+                Vector3 hitPos = hitCollider.GetComponent<Rigidbody>().position;
+                float distance = Distance(position, hitPos);
+                hitCollider.GetComponent<Rigidbody>().velocity = ((radius - distance) * (hitCollider.GetComponent<Rigidbody>().position - position)) * (force * 0.1F);
+            }
+            else if (hitCollider.GetComponent(typeof(PlayerController)))
+            {
+                PlayerController playerController = (PlayerController) hitCollider.GetComponent(typeof(PlayerController));
+                Vector3 hitPos = playerController.transform.position;
+                float distance = Distance(position, hitPos);
+                
+                playerController.AddImpact(((radius - distance) * (hitCollider.GetComponent(typeof(PlayerController)).transform.position - position)) * (force* 0.1F));
             }
 
         }
+    }
+
+    float Distance(Vector3 pos1, Vector3 pos2)
+    {
+        Vector3 difference = new Vector3(
+            pos1.x - pos2.x,
+            pos1.y - pos2.y,
+            pos1.z - pos2.z
+        );
+        float distance = (float)Math.Sqrt(
+                Math.Pow(difference.x, 2f) +
+                Math.Pow(difference.y, 2f) +
+                Math.Pow(difference.z, 2f));
+        return distance;
     }
 }
