@@ -13,12 +13,13 @@ public class PlayerController : MonoBehaviour
     private Camera cam;
     private CharacterController controller;
     private Vector3 impactForce = Vector3.zero;
-    
+    private GameObject bombPrefab;
 
 
     private void Start()
     {
         cam = Camera.main;
+        bombPrefab = (GameObject) Resources.Load("Prefabs/Bomb", typeof(GameObject));
     }
     void Update()
     {
@@ -39,10 +40,45 @@ public class PlayerController : MonoBehaviour
         controller.Move(moveDirection * Time.deltaTime);
         // impactForce = Vector3.Lerp(impactForce, Vector3.zero, 5000*Time.deltaTime);
         impactForce /= 200F;
+        
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit))
+            {
+                if(hit.transform.gameObject.GetComponent(typeof(Bomb)))
+                {
+                    Bomb bomb = (Bomb) hit.transform.gameObject.GetComponent(typeof(Bomb));
+                    bomb.Explode(10);
+                }
+            }
+        }
+        if (Input.GetKeyDown("e"))
+        {
+            RaycastHit hit;
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit))
+            {
+                    
+                GameObject bomb = Instantiate(bombPrefab, hit.point + new Vector3(0, 0.3F, 0), Quaternion.identity);
+            }
+        }
+
+        if (Input.GetKeyDown("x"))
+        {
+            GameObject[] bombObjects = GameObject.FindGameObjectsWithTag("Bomb");
+            foreach (GameObject bombObject in bombObjects)
+            {
+                Bomb bomb = (Bomb) bombObject.GetComponent(typeof(Bomb));
+                bomb.Explode(10);
+            }
+        }
     }
-    
     public void AddImpact(Vector3 force)
     {
         impactForce += force;
     }
+    
+    
 }

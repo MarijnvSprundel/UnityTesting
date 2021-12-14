@@ -8,7 +8,7 @@ public class Bomb : MonoBehaviour
     public float force;
     public bool affectsPlayers;
     
-    public void ExplosionChecker(float radius)
+    public void Explode(float radius)
     {
         Vector3 position = transform.position;
         Collider[] hitColliders = Physics.OverlapSphere(position, radius);
@@ -27,8 +27,8 @@ public class Bomb : MonoBehaviour
                 float distance = Distance(hitPos, position);
                 playerController.AddImpact(((radius - distance) * (hitCollider.GetComponent(typeof(PlayerController)).transform.position - position)) * (force * 0.1F));
             }
-
         }
+        Destroy(gameObject);
     }
 
     float Distance(Vector3 pos1, Vector3 pos2)
@@ -44,4 +44,6 @@ public class Bomb : MonoBehaviour
                 Math.Pow(difference.z, 2f));
         return distance;
     }
+
+
 }

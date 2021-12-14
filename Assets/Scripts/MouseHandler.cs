@@ -19,6 +19,7 @@ public class MouseHandler : MonoBehaviour
         cam = Camera.main;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
     }
 
     void Update()
@@ -32,18 +33,6 @@ public class MouseHandler : MonoBehaviour
 
         cam.transform.eulerAngles = new Vector3(xRotation, yRotation, 0.0f);
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            RaycastHit hit;
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
-            {
-                if(hit.transform.gameObject.GetComponent(typeof(Bomb)))
-                {
-                    Bomb bomb = (Bomb) hit.transform.gameObject.GetComponent(typeof(Bomb));
-                    bomb.ExplosionChecker(10);
-                }
-            }
-        }
+        
     }
 }
