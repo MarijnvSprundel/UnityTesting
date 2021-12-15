@@ -59,6 +59,7 @@ public class PlayerController : MonoBehaviour
         {
             GameObject bomb = Instantiate(bombPrefab, cam.transform.position + cam.transform.forward, Quaternion.identity);
             bomb.GetComponent<Rigidbody>().velocity = cam.transform.forward * 20;
+            bomb.GetComponent<Bomb>().type = "cluster";
         }
 
         // if (Input.GetKeyDown("x"))
