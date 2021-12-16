@@ -12,8 +12,13 @@ public class Bomb : MonoBehaviour
     public string type;
     public bool isImpulse;
     private bool impulsed = false;
+    public float customTime = 0;
+    public bool canAffectOthers = true;
     private void Start()
     {
+        
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        Physics.IgnoreCollision(player.GetComponent<Collider>(), GetComponent<Collider>());
         if (force == 0)
         {
             force = 10F;
@@ -48,11 +53,11 @@ public class Bomb : MonoBehaviour
         switch (type)
         {
             case "cluster":
-                yield return new WaitForSeconds(3F);
+                yield return new WaitForSeconds(Math.Max(3F, customTime));
                 ClusterExplode(6);
                 break;
             default:
-                yield return new WaitForSeconds(2F);
+                yield return new WaitForSeconds(Math.Max(2F, customTime));
                 Explode();
                 break;
         }
@@ -60,12 +65,13 @@ public class Bomb : MonoBehaviour
 
     public void Explode()
     {
-        if (!explodedOthers && type == "")
+        if (!explodedOthers && type == "" && canAffectOthers)
         {
             Vector3 position = transform.position;
             Collider[] hitColliders = Physics.OverlapSphere(position, (float)Math.Max(force - Math.Min(force - 5, 2), 3));
             foreach(var hitCollider in hitColliders)
             {
+                
                 if (hitCollider.CompareTag("Bomb") && hitCollider.gameObject != gameObject)
                 {
                     explodedOthers = true;
@@ -76,21 +82,22 @@ public class Bomb : MonoBehaviour
                 {
                     Vector3 hitPos = hitCollider.GetComponent<Rigidbody>().position;
                     float distance = Distance(hitPos, position);
-                    hitCollider.GetComponent<Rigidbody>().velocity = (float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 3) * 0.01) * (hitCollider.GetComponent<Rigidbody>().position - position) * Math.Min(force * 2F, 1F);
+                    hitCollider.GetComponent<Rigidbody>().velocity = (float)(Math.Pow((force - distance) / force * 10, 3) * 0.01) * (hitCollider.GetComponent<Rigidbody>().position - position) * force * 0.05F;
                 }
                 else if (hitCollider.GetComponent(typeof(PlayerController)) && affectsPlayers)
                 {
                     PlayerController playerController = (PlayerController) hitCollider.GetComponent(typeof(PlayerController));
                     Vector3 hitPos = playerController.transform.position;
                     float distance = Distance(hitPos, position);
-                    playerController.AddImpact((float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 3) * 0.01) * (hitCollider.GetComponent<CharacterController>().transform.position - position) * Math.Min(force * 0.1F, 1F));
-                    int damage = (int) ((Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 3) * 0.01)) * 3;
-                    print((float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 3) * 0.01));
+                    playerController.AddImpact((float)(Math.Pow((force - distance) / force * 10, 3) * 0.01) * (hitCollider.GetComponent<CharacterController>().transform.position - position) * force * 0.05F);
+                    int damage = (int) ((Math.Pow((force - distance) / force * 10, 3) * 0.01)) * 3;
                     hitCollider.GetComponent<PlayerMisc>().health -= damage;
                 }
             }
-            
             ExplodeEffect(position);
+        }else if (!canAffectOthers)
+        {
+            ExplodeEffect(transform.position);
         }
         
     }
@@ -135,7 +142,7 @@ public class Bomb : MonoBehaviour
         GameObject go = Instantiate((GameObject)Resources.Load("Prefabs/Explosion", typeof(GameObject)), position, Quaternion.identity);
         ParticleSystem ps = go.GetComponent<ParticleSystem>();
         var main = ps.main; 
-        main.startSpeed = Math.Min(force, 30F) / 5;
+        main.startSpeed = force / 5;
 
         var burst = ps.emission.GetBurst(0);
         burst.count = force * 10;
