@@ -11,21 +11,35 @@ public class Bomb : MonoBehaviour
     private bool explodedOthers = false;
     public string type;
     public bool isImpulse;
-    public float radius;
+    private bool impulsed = false;
     private void Start()
     {
-        if (radius == 0)
+        if (force == 0)
         {
-            radius = 10F;
+            force = 10F;
         }
-        StartCoroutine(ExampleCoroutine()); 
+
+        if (!isImpulse)
+        {
+            StartCoroutine(ExampleCoroutine()); 
+        }
+        
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (isImpulse && !collision.gameObject.CompareTag("Player"))
+        if (isImpulse && !impulsed)
         {
-            Explode();
+            impulsed = true;
+            switch (type)
+            {
+                case "cluster":
+                    ClusterExplode(6);
+                    break;
+                default:
+                    Explode();
+                    break;
+            }
         }
     }
 
@@ -49,7 +63,7 @@ public class Bomb : MonoBehaviour
         if (!explodedOthers && type == "")
         {
             Vector3 position = transform.position;
-            Collider[] hitColliders = Physics.OverlapSphere(position, radius);
+            Collider[] hitColliders = Physics.OverlapSphere(position, (float)Math.Max(force - Math.Min(force - 5, 2), 3));
             foreach(var hitCollider in hitColliders)
             {
                 if (hitCollider.CompareTag("Bomb") && hitCollider.gameObject != gameObject)
@@ -62,14 +76,16 @@ public class Bomb : MonoBehaviour
                 {
                     Vector3 hitPos = hitCollider.GetComponent<Rigidbody>().position;
                     float distance = Distance(hitPos, position);
-                    hitCollider.GetComponent<Rigidbody>().velocity = ((radius - distance) * (hitCollider.GetComponent<Rigidbody>().position - position)) * (force * 0.1F);
+                    hitCollider.GetComponent<Rigidbody>().velocity = (float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 4) * 0.001) * (hitCollider.GetComponent<Rigidbody>().position - position) * Math.Min(force * 2F, 1F);
                 }
                 else if (hitCollider.GetComponent(typeof(PlayerController)) && affectsPlayers)
                 {
                     PlayerController playerController = (PlayerController) hitCollider.GetComponent(typeof(PlayerController));
                     Vector3 hitPos = playerController.transform.position;
                     float distance = Distance(hitPos, position);
-                    playerController.AddImpact(((radius - distance) * (hitCollider.GetComponent(typeof(PlayerController)).transform.position - position)) * (force * 0.1F));
+                    playerController.AddImpact((float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 4) * 0.001) * (hitCollider.GetComponent<CharacterController>().transform.position - position) * Math.Min(force * 0.1F, 1F));
+                    int damage = (int) ((Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 4) * 0.001)) * 3;
+                    hitCollider.GetComponent<PlayerMisc>().health -= damage;
                 }
             }
             
@@ -80,12 +96,15 @@ public class Bomb : MonoBehaviour
 
     public void ClusterExplode(int amount)
     {
+        
         Vector3 position = transform.position;
         GameObject bombPrefab = (GameObject)Resources.Load("Prefabs/Bomb", typeof(GameObject));
         
-        for (int i = 0; i < amount; i++){
+        for (int i = 0; i < amount; i++)
+        {
+            Vector3 randomAngle = RandomVelocityUpwards();
             GameObject bomb = Instantiate(bombPrefab, position + Vector3.up, Quaternion.identity);
-            bomb.GetComponent<Rigidbody>().velocity = RandomAngle() * 5;
+            bomb.GetComponent<Rigidbody>().velocity += RandomVelocityUpwards() * 3;
         }
         ExplodeEffect(position);
         
@@ -104,9 +123,9 @@ public class Bomb : MonoBehaviour
                 Math.Pow(difference.z, 2f));
         return distance;
     }
-    Vector3 RandomAngle()
+    Vector3 RandomVelocityUpwards()
     {
-        Vector3 pos = new Vector3((UnityEngine.Random.value * 2) - 1, (UnityEngine.Random.value * 2) - 1, (UnityEngine.Random.value * 2) - 1);
+        Vector3 pos = new Vector3((UnityEngine.Random.value * 2) - 1, (UnityEngine.Random.value * 2), (UnityEngine.Random.value * 2) - 1);
         return pos;
     }
 
@@ -114,6 +133,12 @@ public class Bomb : MonoBehaviour
     {
         GameObject go = Instantiate((GameObject)Resources.Load("Prefabs/Explosion", typeof(GameObject)), position, Quaternion.identity);
         ParticleSystem ps = go.GetComponent<ParticleSystem>();
+        var main = ps.main; 
+        main.startSpeed = Math.Min(force, 30F) / 5;
+
+        var burst = ps.emission.GetBurst(0);
+        burst.count = force * 10;
+        ps.emission.SetBurst(0, burst);
         // ps.limitVelocityOverLifetime.dampen = 
         ps.Play();
         Destroy(gameObject);

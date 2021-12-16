@@ -21,10 +21,10 @@ public class PlayerController : MonoBehaviour
     {
         cam = Camera.main;
         bombPrefab = (GameObject) Resources.Load("Prefabs/Bomb", typeof(GameObject));
+        controller = GetComponent<CharacterController>();
     }
     void Update()
     {
-        controller = GetComponent<CharacterController>();
         if (controller.isGrounded)
         {
             moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
@@ -36,11 +36,11 @@ public class PlayerController : MonoBehaviour
         }
 
         moveDirection.y -= gravity * Time.deltaTime;
-        
         if (impactForce.magnitude > 0.2) moveDirection += impactForce;
         controller.Move(moveDirection * Time.deltaTime);
         // impactForce = Vector3.Lerp(impactForce, Vector3.zero, 5000*Time.deltaTime);
         impactForce /= 200F;
+        
         
         // if (Input.GetMouseButtonDown(0))
         // {
@@ -58,22 +58,26 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown("e"))
         {
             GameObject bomb = Instantiate(bombPrefab, cam.transform.position + cam.transform.forward, Quaternion.identity);
-            print((cam.transform.forward * 20) + GetComponent<CharacterController>().velocity);
-            bomb.GetComponent<Rigidbody>().velocity = (cam.transform.forward * 20) + GetComponent<CharacterController>().velocity;
-            bomb.GetComponent<Bomb>().type = "cluster";
-            bomb.GetComponent<Bomb>().isImpulse = true;
+            bomb.GetComponent<Rigidbody>().velocity = (cam.transform.forward * 20);
+            // bomb.GetComponent<Bomb>().type = "cluster";
+            // bomb.GetComponent<Bomb>().isImpulse = true;
         }
 
-        if (Input.GetKeyDown("x"))
+        if (Input.GetKey("x"))
         {
-            GameObject[] bombObjects = GameObject.FindGameObjectsWithTag("Bomb");
-            foreach (GameObject bombObject in bombObjects)
-            {
-                Bomb bomb = (Bomb) bombObject.GetComponent(typeof(Bomb));
-                bomb.Explode();
-            }
+            transform.position = new Vector3(0, 2, 0);
+            moveDirection = Vector3.zero;
         }
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Bomb"))
+        {
+            Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), GetComponent<Collider>());
+        }
+    }
+
     public void AddImpact(Vector3 force)
     {
         impactForce += force;
