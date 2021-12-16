@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dd45448f31b35848be2ca1b4811d539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 50
+  force: 20
   affectsPlayers: 1
   type: 
   isImpulse: 0

@@ -76,15 +76,16 @@ public class Bomb : MonoBehaviour
                 {
                     Vector3 hitPos = hitCollider.GetComponent<Rigidbody>().position;
                     float distance = Distance(hitPos, position);
-                    hitCollider.GetComponent<Rigidbody>().velocity = (float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 4) * 0.001) * (hitCollider.GetComponent<Rigidbody>().position - position) * Math.Min(force * 2F, 1F);
+                    hitCollider.GetComponent<Rigidbody>().velocity = (float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 3) * 0.01) * (hitCollider.GetComponent<Rigidbody>().position - position) * Math.Min(force * 2F, 1F);
                 }
                 else if (hitCollider.GetComponent(typeof(PlayerController)) && affectsPlayers)
                 {
                     PlayerController playerController = (PlayerController) hitCollider.GetComponent(typeof(PlayerController));
                     Vector3 hitPos = playerController.transform.position;
                     float distance = Distance(hitPos, position);
-                    playerController.AddImpact((float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 4) * 0.001) * (hitCollider.GetComponent<CharacterController>().transform.position - position) * Math.Min(force * 0.1F, 1F));
-                    int damage = (int) ((Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 4) * 0.001)) * 3;
+                    playerController.AddImpact((float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 3) * 0.01) * (hitCollider.GetComponent<CharacterController>().transform.position - position) * Math.Min(force * 0.1F, 1F));
+                    int damage = (int) ((Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 3) * 0.01)) * 3;
+                    print((float)(Math.Pow((Math.Min(force, 30F) - distance) / Math.Min(force, 30F) * 10, 3) * 0.01));
                     hitCollider.GetComponent<PlayerMisc>().health -= damage;
                 }
             }
