@@ -58,19 +58,21 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown("e"))
         {
             GameObject bomb = Instantiate(bombPrefab, cam.transform.position + cam.transform.forward, Quaternion.identity);
-            bomb.GetComponent<Rigidbody>().velocity = cam.transform.forward * 20;
+            print((cam.transform.forward * 20) + GetComponent<CharacterController>().velocity);
+            bomb.GetComponent<Rigidbody>().velocity = (cam.transform.forward * 20) + GetComponent<CharacterController>().velocity;
             bomb.GetComponent<Bomb>().type = "cluster";
+            bomb.GetComponent<Bomb>().isImpulse = true;
         }
 
-        // if (Input.GetKeyDown("x"))
-        // {
-        //     GameObject[] bombObjects = GameObject.FindGameObjectsWithTag("Bomb");
-        //     foreach (GameObject bombObject in bombObjects)
-        //     {
-        //         Bomb bomb = (Bomb) bombObject.GetComponent(typeof(Bomb));
-        //         bomb.Explode(10);
-        //     }
-        // }
+        if (Input.GetKeyDown("x"))
+        {
+            GameObject[] bombObjects = GameObject.FindGameObjectsWithTag("Bomb");
+            foreach (GameObject bombObject in bombObjects)
+            {
+                Bomb bomb = (Bomb) bombObject.GetComponent(typeof(Bomb));
+                bomb.Explode();
+            }
+        }
     }
     public void AddImpact(Vector3 force)
     {

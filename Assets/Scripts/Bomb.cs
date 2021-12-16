@@ -10,9 +10,23 @@ public class Bomb : MonoBehaviour
     public bool affectsPlayers;
     private bool explodedOthers = false;
     public string type;
+    public bool isImpulse;
+    public float radius;
     private void Start()
     {
+        if (radius == 0)
+        {
+            radius = 10F;
+        }
         StartCoroutine(ExampleCoroutine()); 
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isImpulse && !collision.gameObject.CompareTag("Player"))
+        {
+            Explode();
+        }
     }
 
     IEnumerator ExampleCoroutine()
@@ -21,16 +35,16 @@ public class Bomb : MonoBehaviour
         {
             case "cluster":
                 yield return new WaitForSeconds(3F);
-                ClusterExplode(10);
+                ClusterExplode(6);
                 break;
             default:
                 yield return new WaitForSeconds(2F);
-                Explode(10);
+                Explode();
                 break;
         }
     }
 
-    public void Explode(float radius)
+    public void Explode()
     {
         if (!explodedOthers && type == "")
         {
@@ -41,7 +55,7 @@ public class Bomb : MonoBehaviour
                 if (hitCollider.CompareTag("Bomb") && hitCollider.gameObject != gameObject)
                 {
                     explodedOthers = true;
-                    hitCollider.GetComponent<Bomb>().Explode(10);
+                    hitCollider.GetComponent<Bomb>().Explode();
                 }
             
                 if (hitCollider.GetComponent<Rigidbody>())
@@ -71,7 +85,7 @@ public class Bomb : MonoBehaviour
         
         for (int i = 0; i < amount; i++){
             GameObject bomb = Instantiate(bombPrefab, position + Vector3.up, Quaternion.identity);
-            bomb.GetComponent<Rigidbody>().velocity = RandomAngle() * 10;
+            bomb.GetComponent<Rigidbody>().velocity = RandomAngle() * 5;
         }
         ExplodeEffect(position);
         
@@ -99,7 +113,9 @@ public class Bomb : MonoBehaviour
     private void ExplodeEffect(Vector3 position)
     {
         GameObject go = Instantiate((GameObject)Resources.Load("Prefabs/Explosion", typeof(GameObject)), position, Quaternion.identity);
-        go.GetComponent<ParticleSystem>().Play();
+        ParticleSystem ps = go.GetComponent<ParticleSystem>();
+        // ps.limitVelocityOverLifetime.dampen = 
+        ps.Play();
         Destroy(gameObject);
         Destroy(go, 2f);
     }

@@ -32,7 +32,7 @@ Transform:
   m_GameObject: {fileID: 5781914835971169711}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.11, y: 0.545, z: -1.35}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -113,6 +113,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   force: 8
   affectsPlayers: 1
+  type: 
+  isImpulse: 0
+  radius: 0
 --- !u!54 &5781914835971169708
 Rigidbody:
   m_ObjectHideFlags: 0
