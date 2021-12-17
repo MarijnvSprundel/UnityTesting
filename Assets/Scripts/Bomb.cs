@@ -18,7 +18,11 @@ public class Bomb : MonoBehaviour
     {
         
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        Physics.IgnoreCollision(player.GetComponent<Collider>(), GetComponent<Collider>());
+        if (player != null)
+        {
+            Physics.IgnoreCollision(player.GetComponent<Collider>(), GetComponent<Collider>());
+        }
+        
         if (force == 0)
         {
             force = 10F;

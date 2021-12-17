@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     public float jumpSpeed = 8.0F;
     public float gravity = 20.0F;
     // public float mass = 3.0F;
-    private Vector3 moveDirection = Vector3.zero;
+    public Vector3 moveDirection = Vector3.zero;
     private Camera cam;
     private CharacterController controller;
     private Vector3 impactForce = Vector3.zero;
@@ -50,8 +50,8 @@ public class PlayerController : MonoBehaviour
         }
         if (transform.position.y < -20)
         {
-            transform.position = new Vector3(0, 2, 0);
-            moveDirection = Vector3.zero;
+            
+            StartCoroutine(PlayerDeath(true));
         }
     }
 
@@ -60,6 +60,22 @@ public class PlayerController : MonoBehaviour
     public void AddImpact(Vector3 force)
     {
         impactForce += force;
+    }
+
+    public IEnumerator PlayerDeath(bool instant = false)
+    {
+        GetComponent<PlayerMisc>().health = 100;
+        if (!instant)
+        {
+            yield return new WaitForSeconds(5);
+        }
+        moveDirection = Vector3.zero;
+        while (transform.position != new Vector3(0, 2, 0))
+        {
+            transform.SetPositionAndRotation(new Vector3(0, 2, 0), Quaternion.identity);
+        }
+        
+        
     }
     
     

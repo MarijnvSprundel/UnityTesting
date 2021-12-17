@@ -29,7 +29,8 @@ public class BombSpawner : MonoBehaviour
         isSpawning = true;
         yield return new WaitForSeconds(Random.value * 2);
         float randomZ = Random.value * 80 - 10;
-        float randomX = Random.value * (randomZ + 10 - 40);
+        print(randomZ + 10 - 40);
+        float randomX = Random.value * (randomZ + 10 - 40) * 3 ;
         float randomY = randomZ * 0.9F;
         Vector3 spawnPos = new Vector3(randomX, randomY, randomZ);
         GameObject bomb = Instantiate(bombPrefab, transform.position + spawnPos, Quaternion.identity);
