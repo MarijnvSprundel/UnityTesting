@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 impactForce = Vector3.zero;
     private GameObject bombPrefab;
     private UIController ui;
+    private float respawnTime = 10F;
+    private bool isDead = false;
 
 
     private void Start()
@@ -54,7 +56,19 @@ public class PlayerController : MonoBehaviour
         {
             StartCoroutine(PlayerDeath(true));
         }
+
+        if (isDead)
+        {
+            float timeUntilRespawn = respawnTime;
+            timeUntilRespawn -= Time.deltaTime;
+            if (timeUntilRespawn < 0)
+            {
+                Respawn();
+            }
+        }
+        
     }
+    
 
 
 
@@ -65,6 +79,7 @@ public class PlayerController : MonoBehaviour
 
     public IEnumerator PlayerDeath(bool instant = false)
     {
+        isDead = true;
         ui.Death();
         GetComponent<PlayerMisc>().health = 100;
         if (!instant)
@@ -77,6 +92,11 @@ public class PlayerController : MonoBehaviour
         transform.position = new Vector3(0, 2, 0);
         controller.enabled = true;
     }
-    
+
+    private void Respawn()
+    {
+        ui.Respawn();
+        isDead = false;
+    }
     
 }

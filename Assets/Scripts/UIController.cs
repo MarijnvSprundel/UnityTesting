@@ -8,6 +8,7 @@ public class UIController : MonoBehaviour
 {
     // Start is called before the first frame update
     private Text healthText;
+    private Text respawnCountdownText;
     private RectTransform redTintTransform;
     private Vector2 lastScreenSize;
     private Vector2 newScreenSize;
@@ -18,6 +19,7 @@ public class UIController : MonoBehaviour
         deathUI = transform.Find("DeathUI").gameObject;
         gameUI = transform.Find("GameUI").gameObject;
         healthText = transform.Find("GameUI/HealthText").GetComponent<Text>();
+        respawnCountdownText = transform.Find("GameUI/DeadText").GetComponent<Text>();
         redTintTransform = transform.Find("DeathUI/RedTint").GetComponent<RectTransform>();
         lastScreenSize = new Vector2(Screen.width, Screen.height);
         newScreenSize = new Vector2(Screen.width, Screen.height);
@@ -40,11 +42,16 @@ public class UIController : MonoBehaviour
     {
         redTintTransform.sizeDelta = newScreenSize;
         gameUI.GetComponent<RectTransform>().sizeDelta = newScreenSize;
-        healthText.GetComponent<RectTransform>().anchoredPosition = new Vector2(newScreenSize.x / -3 + 200,  newScreenSize.y / -3);
+        healthText.GetComponent<RectTransform>().anchoredPosition = new Vector2(120, 25);
     }
     public void UpdateHealth(int health)
     {
         healthText.text = $"Health: {health}";
+    }
+
+    public void UpdateRespawnTimer(float time)
+    {
+        respawnCountdownText.text = $"Respawning in {time} seconds";
     }
 
     public void Death()
