@@ -19,7 +19,7 @@ public class UIController : MonoBehaviour
         deathUI = transform.Find("DeathUI").gameObject;
         gameUI = transform.Find("GameUI").gameObject;
         healthText = transform.Find("GameUI/HealthText").GetComponent<Text>();
-        respawnCountdownText = transform.Find("GameUI/DeadText").GetComponent<Text>();
+        respawnCountdownText = transform.Find("DeathUI/RespawnCountdownText").GetComponent<Text>();
         redTintTransform = transform.Find("DeathUI/RedTint").GetComponent<RectTransform>();
         lastScreenSize = new Vector2(Screen.width, Screen.height);
         newScreenSize = new Vector2(Screen.width, Screen.height);
@@ -49,7 +49,7 @@ public class UIController : MonoBehaviour
         healthText.text = $"Health: {health}";
     }
 
-    public void UpdateRespawnTimer(float time)
+    public void UpdateCountdownTimer(int time)
     {
         respawnCountdownText.text = $"Respawning in {time} seconds";
     }

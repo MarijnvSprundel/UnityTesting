@@ -16,7 +16,6 @@ public class Bomb : MonoBehaviour
     public bool canAffectOthers = true;
     private void Start()
     {
-        
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
@@ -95,7 +94,7 @@ public class Bomb : MonoBehaviour
                     float distance = Distance(hitPos, position);
                     playerController.AddImpact((float)(Math.Pow((force - distance) / force * 10, 3) * 0.01) * (hitCollider.GetComponent<CharacterController>().transform.position - position) * force * 0.05F);
                     int damage = (int) (((Math.Pow((force - distance) / force * 10, 3) * 0.01)) * 3 * force * 0.05);
-                    hitCollider.GetComponent<PlayerMisc>().health -= damage;
+                    hitCollider.GetComponent<PlayerController>().health -= damage;
                 }
             }
             ExplodeEffect(position);
@@ -145,6 +144,7 @@ public class Bomb : MonoBehaviour
     {
         GameObject go = Instantiate((GameObject)Resources.Load("Prefabs/Explosion", typeof(GameObject)), position, Quaternion.identity);
         ParticleSystem ps = go.GetComponent<ParticleSystem>();
+        AudioSource explosionAudio = go.GetComponent<AudioSource>();
         var main = ps.main; 
         main.startSpeed = force / 5;
 
@@ -153,8 +153,9 @@ public class Bomb : MonoBehaviour
         ps.emission.SetBurst(0, burst);
         // ps.limitVelocityOverLifetime.dampen = 
         ps.Play();
+        explosionAudio.Play();
         Destroy(gameObject);
-        Destroy(go, 2f);
+        Destroy(go, 7f);
     }
 
 }

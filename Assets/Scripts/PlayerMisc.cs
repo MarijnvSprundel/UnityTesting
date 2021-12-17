@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class PlayerMisc : MonoBehaviour
 {
-    public int health = 100;
+    
     private UIController ui;
     
     // Start is called before the first frame update
@@ -18,10 +18,6 @@ public class PlayerMisc : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ui.UpdateHealth(health);
-        if (health <= 0)
-        {
-            StartCoroutine(GetComponent<PlayerController>().PlayerDeath());
-        }
+        
     }
 }
