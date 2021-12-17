@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Vector3 impactForce = Vector3.zero;
     private GameObject bombPrefab;
+    private UIController ui;
 
 
     private void Start()
@@ -22,6 +23,7 @@ public class PlayerController : MonoBehaviour
         cam = Camera.main;
         bombPrefab = (GameObject) Resources.Load("Prefabs/Bomb", typeof(GameObject));
         controller = GetComponent<CharacterController>();
+        ui = GameObject.Find("UI").GetComponent<UIController>();
     }
     void Update()
     {
@@ -50,7 +52,6 @@ public class PlayerController : MonoBehaviour
         }
         if (transform.position.y < -20)
         {
-            
             StartCoroutine(PlayerDeath(true));
         }
     }
@@ -64,18 +65,17 @@ public class PlayerController : MonoBehaviour
 
     public IEnumerator PlayerDeath(bool instant = false)
     {
+        ui.Death();
         GetComponent<PlayerMisc>().health = 100;
         if (!instant)
         {
             yield return new WaitForSeconds(5);
         }
+        impactForce = Vector3.zero;
         moveDirection = Vector3.zero;
-        while (transform.position != new Vector3(0, 2, 0))
-        {
-            transform.SetPositionAndRotation(new Vector3(0, 2, 0), Quaternion.identity);
-        }
-        
-        
+        controller.enabled = false;
+        transform.position = new Vector3(0, 2, 0);
+        controller.enabled = true;
     }
     
     

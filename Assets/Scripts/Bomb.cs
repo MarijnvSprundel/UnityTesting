@@ -94,7 +94,7 @@ public class Bomb : MonoBehaviour
                     Vector3 hitPos = playerController.transform.position;
                     float distance = Distance(hitPos, position);
                     playerController.AddImpact((float)(Math.Pow((force - distance) / force * 10, 3) * 0.01) * (hitCollider.GetComponent<CharacterController>().transform.position - position) * force * 0.05F);
-                    int damage = (int) ((Math.Pow((force - distance) / force * 10, 3) * 0.01)) * 3;
+                    int damage = (int) (((Math.Pow((force - distance) / force * 10, 3) * 0.01)) * 3 * force * 0.05);
                     hitCollider.GetComponent<PlayerMisc>().health -= damage;
                 }
             }
